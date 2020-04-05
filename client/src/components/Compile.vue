@@ -28,13 +28,17 @@ import CompilationDetails from './CompilationDetails';
 
 const solc = wrapper(window.Module);
 
+const solcData = yulsource => JSON.stringify({
+  language: 'Yul',
+  sources: { 'input.yul': { content: yulsource } },
+  settings: {
+    outputSelection: { '*': { '*': ['*'], '': ['*'] } },
+    optimizer: { enabled: true, details: { yul: true } },
+  },
+});
+
 export default {
   components: {CompilationDetails},
-  data() {
-    return {
-      compilationDialog: false,
-    }
-  },
   computed: mapState({
     compiler: state => state.compiler,
     compiled: state => state.compiled,
@@ -53,25 +57,14 @@ export default {
         yulpResult = yulp.print(yulp.compile(source).results);
       } catch (yulpErrors) {
         yulpError = [yulpErrors];
-
-        console.log(yulpError);
       }
-      console.log(yulpResult);
 
       if (!yulpError) {
-
-        const yulpName = contractName.split('.sol')[0] + '_yul.sol';
+        const yulpName = `${contractName.split('.sol')[0]}_yul.sol`;
         await remixclient.fileManager.setFile(yulpName, yulpResult);
 
-        var output = JSON.parse(solc.compile(JSON.stringify({
-          "language": "Yul",
-          "sources": { "input.yul": { "content": yulpResult } },
-          "settings": {
-            "outputSelection": { "*": { "*": ["*"], "": [ "*" ] } },
-            "optimizer": { "enabled": true, "details": { "yul": true } }
-          }
-        })));
-        console.log('output', output, output.contracts['input.yul'], Object.values(output.contracts['input.yul']));
+        const output = JSON.parse(solc.compile(solcData(yulpResult)));
+        console.log('output', output);
 
         compiled = Object.values(output.contracts['input.yul'])[0];
         compiled.yul = yulpResult;

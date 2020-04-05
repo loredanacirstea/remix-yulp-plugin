@@ -6,11 +6,17 @@
             <v-flex xs8 class="text-xs-left">
               <v-btn
                 icon
-                class="nav next body-2"
-                slot="button-next"
+                class="body-2"
                 @click="onGitHub"
               >
                 <v-icon small>fa-info</v-icon>
+              </v-btn>
+              <v-btn
+                icon
+                class="body-2"
+                @click="onReload"
+              >
+                <v-icon small>fa-sync</v-icon>
               </v-btn>
             </v-flex>
             <v-flex xs4 class="text-xs-right">
@@ -94,21 +100,19 @@ export default {
   },
   methods: {
     async setData() {
-      this.$store.dispatch('setCompiler');
       await this.$store.state.remixclient.onload();
       this.setRemixFile();
     },
-    setRemixFile() {
-      this.$store.state.remixclient.on('fileManager', 'currentFileChanged', (fileName) => {
+    async setRemixFile() {
+      const {remixclient} = this.$store.state;
+
+      remixclient.fileManager.on('currentFileChanged', (fileName) => {
         this.setSource(fileName);
       });
 
-      this.$store.state.remixclient.call('fileManager', 'getCurrentFile').then((fileName) => {
-        this.setSource(fileName);
-      }).catch((error) => {
-        console.log(error);
-        // TODO notification
-      });
+      // TODO error notification
+      const fileName = await remixclient.fileManager.getCurrentFile().catch(console.log);
+      if (fileName) this.setSource(fileName);
     },
     setSource(fileName) {
       if (fileName) {
@@ -130,6 +134,9 @@ export default {
     onGitHub() {
       window.open(this.github, '_blank');
     },
+    onReload() {
+      window.location.reload();
+    }
   },
 };
 
