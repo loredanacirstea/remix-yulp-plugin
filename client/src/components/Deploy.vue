@@ -64,10 +64,14 @@
         <p class="body-2 text-xs-center grey--text font-weight-bold">Deployed Contracts</p>
         <v-divider></v-divider>
       </v-flex>
+      <v-flex xs10 v-if="currentError">
+        <h4>Errors</h4>
+        {{currentError.error}}. {{currentError.errorType}}
+      </v-flex>
       <v-flex xs12 v-if="deployedContracts.length === 0">
         <span class="caption">Currently you have no contract instances to interact with.</span>
       </v-flex>
-      <v-flex xs12 else v-for="(deployed, i) in deployedContracts" :key="i">
+      <v-flex xs12 v-else v-for="(deployed, i) in deployedContracts" :key="i">
         <p>Address: {{deployed.receipt.createdAddress}}</p>
         <p>TxHash: {{deployed.receipt.transactionHash}}</p>
         <v-divider></v-divider>
@@ -95,6 +99,7 @@ export default {
       txGasLimit: 4000000,
       txValue: 0,
       deployedContracts: [],
+      currentError: null,
     };
   },
   computed: mapState({
@@ -125,10 +130,15 @@ export default {
       const receipt = await remixclient.udapp.sendTransaction(transaction);
       console.log('receipt', receipt);
 
-      this.deployedContracts.push({
-        receipt,
-        abi: [],
-      });
+      if (receipt.error) {
+        this.currentError = receipt.error;
+      } else {
+        this.currentError = null;
+        this.deployedContracts.push({
+          receipt,
+          abi: [],
+        });
+      }
     },
   },
 };
