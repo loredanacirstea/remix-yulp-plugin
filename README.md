@@ -10,6 +10,19 @@ Start client (see Development). Connect to a local plugin, on Remix (has to be o
 - url: `http://localhost:8080`
 - location: `Side Panel`
 
+![local_plugin.png](./docs/images/local_plugin.png)
+
+- write your Yul+ contract in Remix
+- open the plugin & click the `Compile` button
+
+![plugin_compile.png](./docs/images/plugin_compile.png)
+
+- to deploy, go to the deployment step (top right)
+- enter deployment arguments in hex format, if any
+- click the `Deploy` button
+
+![plugin_deploy.png](./docs/images/plugin_deploy.png)
+
 ## Development
 
 ### Client

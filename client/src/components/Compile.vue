@@ -60,8 +60,8 @@ export default {
       }
 
       if (!yulpError) {
-        const yulpName = `${contractName.split('.sol')[0]}_yul.sol`;
-        await remixclient.fileManager.setFile(yulpName, yulpResult);
+        // const yulpName = `${contractName.split('.sol')[0]}_yul.sol`;
+        // await remixclient.fileManager.setFile(yulpName, yulpResult);
 
         const output = JSON.parse(solc.compile(solcData(yulpResult)));
         console.log('output', output);
