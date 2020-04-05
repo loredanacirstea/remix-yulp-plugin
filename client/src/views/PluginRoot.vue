@@ -136,7 +136,7 @@ export default {
     },
     onReload() {
       window.location.reload();
-    }
+    },
   },
 };
 

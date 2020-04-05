@@ -48,7 +48,7 @@ export default {
   methods: {
     async onCompile() {
       const {source} = this;
-      const {remixclient, contractName} = this.$store.state;
+      // const {remixclient, contractName} = this.$store.state;
       let yulpResult = null;
       let yulpError = null;
       let compiled = {};
@@ -72,10 +72,11 @@ export default {
       }
       compiled.errors = yulpError;
 
-      this.$store.dispatch('setCompiled', compiled)
+      this.$store.dispatch('setCompiled', compiled);
     },
   },
-}
+};
+
 </script>
 
 <style>

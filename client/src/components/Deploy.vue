@@ -67,7 +67,7 @@
       <v-flex xs12 v-if="deployedContracts.length === 0">
         <span class="caption">Currently you have no contract instances to interact with.</span>
       </v-flex>
-      <v-flex xs12 else v-for="deployed in deployedContracts">
+      <v-flex xs12 else v-for="(deployed, i) in deployedContracts" :key="i">
         <p>Address: {{deployed.receipt.createdAddress}}</p>
         <p>TxHash: {{deployed.receipt.transactionHash}}</p>
         <v-divider></v-divider>
@@ -128,7 +128,7 @@ export default {
       this.deployedContracts.push({
         receipt,
         abi: [],
-      })
+      });
     },
   },
 };
