@@ -1,11 +1,12 @@
 # Remix plugin for Yul+
 
-In-work plugin for [Remix IDE](http://remix.ethereum.org) for compiling and deploying Yul+ smart contracts.
+In-work plugin for [Remix IDE](http://remix-alpha.ethereum.org) for compiling and deploying Yul+ smart contracts.
 
 ## Use
 
-Start client (see Development). Connect to a local plugin, on Remix (has to be on http):
+Start client (see Development). Connect to a local plugin, on Remix:
 
+- works on http://remix-alpha.ethereum.org - Remix alpha version, on http
 - name the plugin: `yulp`
 - url: `http://localhost:8080`
 - location: `Side Panel`
