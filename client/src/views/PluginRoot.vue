@@ -104,24 +104,8 @@ export default {
       this.setRemixFile();
     },
     async setRemixFile() {
-      const {remixclient} = this.$store.state;
-
-      remixclient.fileManager.on('currentFileChanged', (fileName) => {
-        this.setSource(fileName);
-      });
-
-      // TODO error notification
-      const fileName = await remixclient.fileManager.getCurrentFile().catch(console.log);
-      if (fileName) this.setSource(fileName);
-    },
-    setSource(fileName) {
-      if (fileName) {
-        this.$store.state.contractName = fileName;
-        this.$store.state.remixclient.call('fileManager', 'getFile', fileName)
-          .then((source) => {
-            this.$store.commit('setState', {field: 'source', data: source});
-          });
-      }
+      this.$store.dispatch('listenCurrentFile');
+      this.$store.dispatch('setCurrentFile');
     },
     onSwiperPrev() {
       this.swiper.slidePrev();

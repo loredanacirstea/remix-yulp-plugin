@@ -27,7 +27,7 @@
     <v-layout v-if="compiled" row wrap style="padding-left: 10px;padding-top: 10px;">
       <v-flex xs11>
         <v-select v-model="contractSelect"
-          :items="[contractName]"
+          :items="[shortFileName]"
           solo
           class="body-1"
         ></v-select>
@@ -104,11 +104,11 @@ export default {
   },
   computed: mapState({
     compiled: state => state.compiled,
-    contractName: state => state.contractName.replace('browser/', ''),
+    shortFileName: state => state.fileName.replace('browser/', ''),
   }),
   watch: {
-    contractName() {
-      this.contractSelect = this.contractName;
+    shortFileName() {
+      this.contractSelect = this.shortFileName;
     },
   },
   methods: {

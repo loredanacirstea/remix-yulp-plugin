@@ -10,7 +10,7 @@
         >
           <v-icon small left dark>fa-sync</v-icon>
           <span class="text-capitalize">Compile</span>
-          <span class="text-none" style="padding-left:6px">{{contractName}}</span>
+          <span class="text-none" style="padding-left:6px">{{shortFileName}}</span>
         </v-btn>
       </v-flex>
       <v-flex xs11 v-if="compiled">
@@ -40,15 +40,16 @@ const solcData = yulsource => JSON.stringify({
 export default {
   components: {CompilationDetails},
   computed: mapState({
-    compiler: state => state.compiler,
     compiled: state => state.compiled,
-    contractName: state => state.contractName.replace('browser/', ''),
+    shortFileName: state => state.fileName.replace('browser/', ''),
     source: state => state.source,
   }),
   methods: {
     async onCompile() {
+      // We make sure that we are compiling the current file state
+      await this.$store.dispatch('setCurrentFile');
+
       const {source} = this;
-      // const {remixclient, contractName} = this.$store.state;
       let yulpResult = null;
       let yulpError = null;
       let compiled = {};
@@ -60,9 +61,6 @@ export default {
       }
 
       if (!yulpError) {
-        // const yulpName = `${contractName.split('.sol')[0]}_yul.sol`;
-        // await remixclient.fileManager.setFile(yulpName, yulpResult);
-
         const output = JSON.parse(solc.compile(solcData(yulpResult)));
         console.log('output', output);
 
