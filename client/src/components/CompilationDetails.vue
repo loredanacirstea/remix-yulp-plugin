@@ -1,5 +1,5 @@
 <template>
-  <v-flex xs12 style="padding-left: 35px;">
+  <v-flex xs12 style="padding-left: 20px;">
     <v-flex xs10 v-if="compiled.errors">
       <h3>Errors</h3>
       {{compiled.errors.map(v => v.formattedMessage || v.message)}}
@@ -10,7 +10,7 @@
         <v-textarea
           v-model="compiled.yul"
           rows="25"
-          style="width: 100%; padding: 10px;"
+          style="width: 100%;font-size: 12px;"
         ></v-textarea>
       </div>
     </v-flex>
@@ -19,12 +19,12 @@
       <v-textarea
         v-model="compiled.evm.bytecode.object"
         rows="5"
-        style="margin-top: 10px; border: 0px;"
+        style="margin-top: 10px; border: 0px;font-size: 12px;"
       ></v-textarea>
       <v-textarea
         v-model="compiled.evm.bytecode.opcodes"
         rows="5"
-        style="margin-top: 20px; border: 0px; margin-bottom: 40px;"
+        style="margin-top: 20px; border: 0px; margin-bottom: 40px;font-size: 12px;"
       ></v-textarea>
     </v-flex>
   </v-flex>

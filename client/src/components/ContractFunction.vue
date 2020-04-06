@@ -4,9 +4,9 @@
       <v-btn
         dark
         @click="runFunction"
-        color="#4F97D5"
+        :color="colorMap[abi.stateMutability]"
         class="text-none"
-        style="text-transform:none!important;margin-left:15px;"
+        style="text-transform:none!important;margin-left:5px;"
       >
         {{abi.name}}
       </v-btn>
@@ -19,6 +19,7 @@
         type="text"
         :placeholder="inputsStr(abi.inputs)"
         :label="inputsStr(abi.inputs)"
+        :hint="inputsStr(abi.inputs)"
         :error="errorMessages.length > 0"
         :error-messages="errorMessages"
         @input="argsValueCheck"
@@ -26,7 +27,7 @@
       ></v-text-field>
     </v-flex>
     <v-flex xs9 style="margin-left:20px;">
-      <v-textarea rows="3" v-if="output" v-model="output"></v-textarea>
+      <v-textarea rows="3" v-if="output" v-model="output" style="font-size: 12px;"></v-textarea>
     </v-flex>
   </v-layout>
 </template>
@@ -41,6 +42,12 @@ export default {
       functionArgs: '',
       errorMessages: [],
       output: null,
+      colorMap: {
+        payable: '#E74C3C',
+        view: '#3498DB',
+        pure: '#3498DB',
+        nonpayable: '#E89F3C',
+      }
     };
   },
   methods: {

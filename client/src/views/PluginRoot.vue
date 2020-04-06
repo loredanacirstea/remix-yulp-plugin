@@ -2,21 +2,14 @@
   <swiper ref="mySwiper" :options="swiperOptions">
       <swiper-slide class="no-swipe">
         <v-container class="nopadd">
-          <v-layout row wrap>
-            <v-flex xs8 class="text-xs-left">
+          <v-layout row wrap class="nomarg">
+            <v-flex xs7 class="text-xs-left">
               <v-btn
                 icon
                 class="body-2"
                 @click="onGitHub"
               >
                 <v-icon small>fa-info</v-icon>
-              </v-btn>
-              <v-btn
-                icon
-                class="body-2"
-                @click="onReload"
-              >
-                <v-icon small>fa-sync</v-icon>
               </v-btn>
             </v-flex>
             <v-flex xs4 class="text-xs-right">
@@ -140,5 +133,9 @@ export default {
 }
 .nopadd {
   padding: 0!important;
+}
+.nomarg {
+  margin-left: 0!important;
+  margin-right: 0!important;
 }
 </style>

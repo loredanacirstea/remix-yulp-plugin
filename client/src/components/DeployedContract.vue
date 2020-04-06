@@ -1,7 +1,7 @@
 <template>
-  <v-layout row wrap>
+  <v-flex xs12>
     <v-layout v-for="(fabi, i) in abi" :key="i">
-      <v-flex xs12>
+      <v-flex xs12 v-if="fabi.type === 'function'">
         <ContractFunction
           :abi="fabi"
           :address="address"
@@ -10,7 +10,7 @@
         />
       </v-flex>
     </v-layout>
-  </v-layout>
+  </v-flex>
 </template>
 
 <script>

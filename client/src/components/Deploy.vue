@@ -46,9 +46,9 @@
           class="body-1"
         ></v-text-field>
       </v-flex>
-      <v-flex xs12>
+      <!-- <v-flex xs12>
         <v-flex xs3 text-xs-center><p class="caption" style="margin-bottom:3px;">or</p></v-flex>
-      </v-flex>
+      </v-flex> -->
       <!-- <v-flex xs3>
         <v-btn dark @click="deploy" color="#4F97D5" style="margin-left:0;">At address</v-btn>
       </v-flex>
@@ -63,10 +63,10 @@
     </v-layout>
     <v-divider></v-divider>
     <v-layout v-if="compiled" row wrap style="padding-left: 20px;padding-top: 20px;">
-      <v-flex xs4>
+      <!-- <v-flex xs4>
         <p class="body-2 text-xs-center grey--text font-weight-bold">Deployed Contracts</p>
         <v-divider></v-divider>
-      </v-flex>
+      </v-flex> -->
       <v-flex xs10 v-if="currentError">
         <h4>Errors</h4>
         {{currentError.error}}. {{currentError.errorType}}
@@ -75,8 +75,10 @@
         <span class="caption">Currently you have no contract instances to interact with.</span>
       </v-flex>
       <v-flex xs12 v-else v-for="(deployed, i) in deployedContracts" :key="i">
-        <p>Address: {{deployed.receipt.createdAddress}}</p>
-        <p>TxHash: {{deployed.receipt.transactionHash}}</p>
+        <v-flex xs12>
+          <p>Address: {{deployed.receipt.createdAddress}}</p>
+          <p>TxHash: {{deployed.receipt.transactionHash}}</p>
+        </v-flex>
         <DeployedContract
             :key="`contract_${i}`"
             :abi="deployed.abi"
