@@ -63,6 +63,8 @@ export default {
         this.errorMessages = ['Input invalid'];
         return [];
       }
+
+      if (!(parsed instanceof Array)) parsed = [parsed];
       this.errorMessages = [];
       return parsed;
     },
