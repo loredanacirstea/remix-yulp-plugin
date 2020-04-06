@@ -25,7 +25,7 @@ import { mapState } from 'vuex';
 import yulp from 'yulp';
 import wrapper from 'solc/wrapper';
 import CompilationDetails from './CompilationDetails';
-import { abiExtractYulp } from '../utils/abiExtractYulp';
+import { abiBuildSigsTopics } from '../utils/abiExtractYulp';
 
 const solc = wrapper(window.Module);
 
@@ -51,26 +51,32 @@ export default {
       await this.$store.dispatch('setCurrentFile');
 
       const {source} = this;
+      let yulpCompiled = null;
       let yulpResult = null;
       let yulpError = null;
       let compiled = {errors: []};
 
       try {
-        yulpResult = yulp.print(yulp.compile(source).results);
+        yulpCompiled = yulp.compile(source);
+        yulpResult = yulp.print(yulpCompiled.results);
       } catch (yulpErrors) {
         yulpError = [yulpErrors];
+        compiled.errors = yulpError;
       }
 
       if (!yulpError) {
         const output = JSON.parse(solc.compile(solcData(yulpResult)));
         console.log('output', output);
 
-        compiled = Object.values(output.contracts['input.yul'])[0];
+        if (output.contracts) {
+          compiled = Object.values(output.contracts['input.yul'])[0];
+        }
         compiled.yul = yulpResult;
-        compiled.abi = abiExtractYulp(source);
+        compiled.signatures = yulpCompiled.signatures;
+        compiled.topics = yulpCompiled.topics;
+        compiled.abi = abiBuildSigsTopics(yulpCompiled.signatures, yulpCompiled.topics);
         compiled.errors = output.errors;
       }
-      compiled.errors = yulpError;
 
       this.$store.dispatch('setCompiled', compiled);
     },

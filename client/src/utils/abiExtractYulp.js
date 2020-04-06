@@ -5,6 +5,7 @@
 // group3 arguments
 // group4 modifiers & return
 const funcRegex = /case sig"(function )?(.*)\((.*)\)\s(.*)?"/gi;
+const funcRegex2 = /sig"(function )?(.*)\((.*)\)\s(.*)?"/;
 
 const mutabilityRegex = /pure|view|payable/;
 const outputRegex = /\((.*)\)/;
@@ -15,17 +16,14 @@ const outputRegex = /\((.*)\)/;
 // group2 name
 // group3 inputs e.g. address indexed _owner, address indexed _spender
 const eventRegex = /topic"(event )?(.*)\((.*)\)"/gi;
+const eventRegex2 = /topic"(event )?(.*)\((.*)\)"/;
 
 export const getMatches = (source, regexp) => {
   let match;
   const imports = [];
 
   while ((match = regexp.exec(source)) !== null) {
-    imports.push({
-      groups: match,
-      index: match.index,
-      lastIndex: regexp.lastIndex,
-    });
+    imports.push(match);
   }
   return imports;
 }
@@ -72,18 +70,9 @@ const eventAbiFromMatch = (name, inputStr) => {
   }
 }
 
-// Temporary tool until yulp has the abi as build output,
-// hence it may not be accurate, as it is not constructed
-// through the yulp grammar
-// Does not contain the constructor function
-// TODO: struct definition in signature - components
-export const abiExtractYulp = yulpsource => {
-  const funcMatches = getMatches(yulpsource, funcRegex);
-  const eventMatches = getMatches(yulpsource, eventRegex);
-
+const abiBuildMatches = (funcMatches, eventMatches) => {
   const funcabi = funcMatches.map(match => {
-    const [, , name, inputs, tail] = match.groups;
-
+    const [, , name, inputs, tail] = match;
     let stateModifier = tail.match(mutabilityRegex);
     stateModifier = stateModifier ? stateModifier[0] : null;
 
@@ -94,9 +83,29 @@ export const abiExtractYulp = yulpsource => {
   });
 
   const evabi = eventMatches.map(match => {
-    const [, , name, inputs] = match.groups;
+    const [, , name, inputs] = match;
     return eventAbiFromMatch(name, inputs);
   });
 
   return funcabi.concat(evabi);
+}
+
+export const abiBuildSigsTopics = (signatures, topics) => {
+  const funcMatches = signatures
+    .map(sig => sig.abi.match(funcRegex2));
+  const topicMatches = topics.map(topic => topic.abi.match(eventRegex2));
+
+  return abiBuildMatches(funcMatches, topicMatches);
+}
+
+// Temporary tool until yulp has the abi as build output,
+// hence it may not be accurate, as it is not constructed
+// through the yulp grammar
+// Does not contain the constructor function
+// TODO: struct definition in signature - components
+export const abiExtractYulp = yulpsource => {
+  const funcMatches = getMatches(yulpsource, funcRegex);
+  const eventMatches = getMatches(yulpsource, eventRegex);
+
+  return abiBuildMatches(funcMatches, eventMatches);
 }
