@@ -45,6 +45,11 @@ export default {
     shortFileName: state => state.fileName.replace('browser/', ''),
     source: state => state.source,
   }),
+  watch: {
+    shortFileName() {
+      this.onCompile();
+    },
+  },
   methods: {
     async onCompile() {
       // We make sure that we are compiling the current file state

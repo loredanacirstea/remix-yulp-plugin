@@ -120,10 +120,22 @@ export default {
   }),
   watch: {
     shortFileName() {
-      this.contractSelect = this.shortFileName;
+      if (this.contractSelect !== this.shortFileName) {
+        this.contractSelect = this.shortFileName;
+        this.reset();
+      }
     },
+    compiled() {
+      this.reset();
+    }
   },
   methods: {
+    reset() {
+      // this.deployArgs = '';
+      this.deployAddress = null;
+      this.deployedContracts = [];
+      this.currentError = null;
+    },
     async deploy() {
       const {compiled, deployArgs} = this;
       const {remixclient} = this.$store.state;
@@ -144,6 +156,10 @@ export default {
 
       if (receipt.error) {
         this.currentError = receipt.error;
+        this.deployedContracts = [{
+          receipt,
+          abi: [],
+        }];
       } else {
         this.currentError = null;
         // keep only one contract for now
