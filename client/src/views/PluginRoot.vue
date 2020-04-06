@@ -24,7 +24,7 @@
               </v-btn>
             </v-flex>
             <v-flex xs12>
-              <Compile/>
+              <Compile @onCompile="onCompile"/>
             </v-flex>
           </v-layout>
         </v-container>
@@ -32,7 +32,7 @@
       <swiper-slide class="no-swipe" style="margin-left: 25px;">
         <v-container class="nopadd">
           <v-layout row wrap>
-            <v-flex xs12 class="text-xs-left">
+            <v-flex xs6 class="text-xs-left">
               <v-btn
                 flat
                 class="nav prev body-2"
@@ -41,6 +41,16 @@
               >
                 <v-icon small>fa-chevron-left</v-icon>
                 <span class="text-none" style="padding-left:6px">Compile</span>
+              </v-btn>
+            </v-flex>
+            <v-flex xs4 class="text-xs-right">
+              <v-btn
+                flat
+                class="nav next body-2"
+                @click="onCompile"
+              >
+                <v-icon small>fa-sync</v-icon>
+                <span class="text-none" style="padding-left:6px">Recompile</span>
               </v-btn>
             </v-flex>
             <v-flex xs12>
@@ -55,15 +65,27 @@
 <script>
 import Vue from 'vue';
 import { mapState } from 'vuex';
+import yulp from 'yulp';
+import wrapper from 'solc/wrapper';
 import VueAwesomeSwiper from 'vue-awesome-swiper';
 import 'swiper/dist/css/swiper.css';
 
 import Compile from '../components/Compile';
 import Deploy from '../components/Deploy';
-
 import { repoLink } from '../config';
+import { abiBuildSigsTopics } from '../utils/abiExtractYulp';
 
 Vue.use(VueAwesomeSwiper);
+
+const solc = wrapper(window.Module);
+const solcData = yulsource => JSON.stringify({
+  language: 'Yul',
+  sources: { 'input.yul': { content: yulsource } },
+  settings: {
+    outputSelection: { '*': { '*': ['*'], '': ['*'] } },
+    optimizer: { enabled: true, details: { yul: true } },
+  },
+});
 
 export default {
   components: {
@@ -87,6 +109,8 @@ export default {
     swiper() {
       return this.$refs.mySwiper.swiper;
     },
+    compiled: state => state.compiled,
+    source: state => state.source,
   }),
   mounted() {
     this.setData();
@@ -113,6 +137,40 @@ export default {
     },
     onReload() {
       window.location.reload();
+    },
+    async onCompile() {
+      // We make sure that we are compiling the current file state
+      await this.$store.dispatch('setCurrentFile');
+
+      const {source} = this;
+      let yulpCompiled = null;
+      let yulpResult = null;
+      let yulpError = null;
+      let compiled = {errors: []};
+
+      try {
+        yulpCompiled = yulp.compile(source);
+        yulpResult = yulp.print(yulpCompiled.results);
+      } catch (yulpErrors) {
+        yulpError = [yulpErrors];
+        compiled.errors = yulpError;
+      }
+
+      if (!yulpError) {
+        const output = JSON.parse(solc.compile(solcData(yulpResult)));
+        console.log('output', output);
+
+        if (output.contracts) {
+          compiled = Object.values(output.contracts['input.yul'])[0];
+        }
+        compiled.yul = yulpResult;
+        compiled.signatures = yulpCompiled.signatures;
+        compiled.topics = yulpCompiled.topics;
+        compiled.abi = abiBuildSigsTopics(yulpCompiled.signatures, yulpCompiled.topics);
+        compiled.errors = output.errors;
+      }
+
+      this.$store.dispatch('setCompiled', compiled);
     },
   },
 };
