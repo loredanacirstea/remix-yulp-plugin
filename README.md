@@ -7,6 +7,7 @@ In-work plugin for [Remix IDE](http://remix-alpha.ethereum.org) for compiling an
 Start client (see Development). Connect to a local plugin, on Remix:
 
 - works on http://remix-alpha.ethereum.org - Remix alpha version, on http
+- activate the `Run and Deploy Transactions` plugin
 - name the plugin: `yulp`
 - url: `http://localhost:8080`
 - location: `Side Panel`
@@ -23,6 +24,10 @@ Start client (see Development). Connect to a local plugin, on Remix:
 - click the `Deploy` button
 
 ![plugin_deploy.png](./docs/images/plugin_deploy.png)
+
+- you can interact with the deployed contract functions if you supply the full signatures in the source code - e.g. `case sig"function get() view public returns (uint256)"`
+
+![plugin_interact.png](./docs/images/plugin_interact.png)
 
 ## Development
 
