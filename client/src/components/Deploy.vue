@@ -1,10 +1,10 @@
 <template>
-  <div>
+  <v-layout wrap>
     <v-layout row wrap align-baseline style="padding-left: 20px;padding-top: 20px;">
       <v-flex xs2>
         <span class="caption text-xs-center">Gas limit</span>
       </v-flex>
-      <v-flex xs8 offset-xs1>
+      <v-flex xs6 offset-xs1>
           <v-text-field
             v-model="txGasLimit"
             solo
@@ -12,10 +12,11 @@
             class="body-1"
           ></v-text-field>
         </v-flex>
+      <v-flex xs2></v-flex>
       <v-flex xs2>
         <span class="caption text-xs-center">Value</span>
       </v-flex>
-      <v-flex xs8 offset-xs1>
+      <v-flex xs6 offset-xs1>
         <v-text-field
           v-model="txValue"
           solo
@@ -23,19 +24,21 @@
           class="body-1"
         ></v-text-field>
       </v-flex>
+      <v-flex xs2></v-flex>
     </v-layout>
     <v-layout v-if="compiled" row wrap style="padding-left: 10px;padding-top: 10px;">
-      <v-flex xs11>
+      <v-flex xs10>
         <v-select v-model="contractSelect"
           :items="[shortFileName]"
           solo
           class="body-1"
         ></v-select>
       </v-flex>
+      <v-flex xs2></v-flex>
       <v-flex xs3>
         <v-btn dark @click="deploy" color="#E89F3C" style="margin-left:0;">Deploy</v-btn>
       </v-flex>
-      <v-flex xs7 offset-xs1>
+      <v-flex xs5 offset-xs1>
         <v-text-field
           v-model="deployArgs"
           solo
@@ -46,17 +49,17 @@
       <v-flex xs12>
         <v-flex xs3 text-xs-center><p class="caption" style="margin-bottom:3px;">or</p></v-flex>
       </v-flex>
-      <v-flex xs3>
+      <!-- <v-flex xs3>
         <v-btn dark @click="deploy" color="#4F97D5" style="margin-left:0;">At address</v-btn>
       </v-flex>
-      <v-flex xs7 offset-xs1>
+      <v-flex xs5 offset-xs1>
         <v-text-field
           v-model="deployAddress"
           solo
           placeholder="Load contract from Address"
           class="body-1"
         ></v-text-field>
-      </v-flex>
+      </v-flex> -->
     </v-layout>
     <v-divider></v-divider>
     <v-layout v-if="compiled" row wrap style="padding-left: 20px;padding-top: 20px;">
@@ -74,6 +77,13 @@
       <v-flex xs12 v-else v-for="(deployed, i) in deployedContracts" :key="i">
         <p>Address: {{deployed.receipt.createdAddress}}</p>
         <p>TxHash: {{deployed.receipt.transactionHash}}</p>
+        <DeployedContract
+            :key="`contract_${i}`"
+            :abi="deployed.abi"
+            :address="deployed.receipt.createdAddress"
+            :txGasLimit="txGasLimit"
+            :txValue="txValue"
+        />
         <v-divider></v-divider>
       </v-flex>
     </v-layout>
@@ -84,13 +94,15 @@
         </p>
       </v-flex>
     </v-layout>
-  </div>
+  </v-layout>
 </template>
 
 <script>
 import { mapState } from 'vuex';
+import DeployedContract from './DeployedContract';
 
 export default {
+  components: { DeployedContract },
   data() {
     return {
       contractSelect: null,
@@ -134,22 +146,15 @@ export default {
         this.currentError = receipt.error;
       } else {
         this.currentError = null;
-        this.deployedContracts.push({
+        // keep only one contract for now
+        // TODO: fixme
+        this.deployedContracts = [{
           receipt,
-          abi: [],
-        });
+          abi: compiled.abi,
+        }];
       }
     },
   },
 };
 
 </script>
-
-<style>
-.v-input__slot {
-  min-height: 40px;
-}
-.v-text-field__details {
-  height: 0;
-}
-</style>

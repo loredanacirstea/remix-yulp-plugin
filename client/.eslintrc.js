@@ -16,6 +16,10 @@ module.exports = {
     'import/prefer-default-export': 'off',
     'no-plusplus': 'off',
     'import/extensions': 'off',
+    'no-cond-assign': 'off',
+    'semi': 'off',
+    'arrow-parens': 'off',
+    'arrow-body-style': 'off',
   },
   parserOptions: {
     parser: 'babel-eslint',

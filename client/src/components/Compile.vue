@@ -25,6 +25,7 @@ import { mapState } from 'vuex';
 import yulp from 'yulp';
 import wrapper from 'solc/wrapper';
 import CompilationDetails from './CompilationDetails';
+import { abiExtractYulp } from '../utils/abiExtractYulp';
 
 const solc = wrapper(window.Module);
 
@@ -52,7 +53,7 @@ export default {
       const {source} = this;
       let yulpResult = null;
       let yulpError = null;
-      let compiled = {};
+      let compiled = {errors: []};
 
       try {
         yulpResult = yulp.print(yulp.compile(source).results);
@@ -66,6 +67,7 @@ export default {
 
         compiled = Object.values(output.contracts['input.yul'])[0];
         compiled.yul = yulpResult;
+        compiled.abi = abiExtractYulp(source);
         compiled.errors = output.errors;
       }
       compiled.errors = yulpError;
