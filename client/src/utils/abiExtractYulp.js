@@ -6,6 +6,7 @@
 // group4 modifiers & return
 const funcRegex = /case sig"(function )?(.*)\((.*)\)\s(.*)?"/gi;
 const funcRegex2 = /sig"(function )?(.*)\((.*)\)\s(.*)?"/;
+const funcRegexFallb = /sig"(function )?(.*)\((.*)\)"/
 
 const mutabilityRegex = /pure|view|payable/;
 const outputRegex = /\((.*)\)/;
@@ -71,13 +72,19 @@ const eventAbiFromMatch = (name, inputStr) => {
 }
 
 const abiBuildMatches = (funcMatches, eventMatches) => {
+  if (!(funcMatches instanceof Array)) return [];
+
   const funcabi = funcMatches.map(match => {
     const [, , name, inputs, tail] = match;
-    let stateModifier = tail.match(mutabilityRegex);
-    stateModifier = stateModifier ? stateModifier[0] : null;
+    let stateModifier = null;
+    let outputs = null;
 
-    let outputs = tail.match(outputRegex);
-    outputs = outputs ? outputs[1] : null;
+    if (tail) {
+      stateModifier = tail.match(mutabilityRegex);
+      stateModifier = stateModifier ? stateModifier[0] : null;
+      outputs = tail.match(outputRegex);
+      outputs = outputs ? outputs[1] : null;
+    }
 
     return funcAbiFromMatch(name, inputs, stateModifier, outputs);
   });
@@ -91,8 +98,11 @@ const abiBuildMatches = (funcMatches, eventMatches) => {
 }
 
 export const abiBuildSigsTopics = (signatures, topics) => {
-  const funcMatches = signatures
-    .map(sig => sig.abi.match(funcRegex2));
+  const funcMatches = signatures.map(sig => {
+    let match = sig.abi.match(funcRegex2);
+    if (!match) match = sig.abi.match(funcRegexFallb);
+    return match;
+  });
   const topicMatches = topics.map(topic => topic.abi.match(eventRegex2));
 
   return abiBuildMatches(funcMatches, topicMatches);
