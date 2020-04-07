@@ -71,8 +71,9 @@
         <h4>Errors</h4>
         {{currentError.error}}. {{currentError.errorType}}
       </v-flex>
-      <v-flex xs12 v-if="deployedContracts.length === 0">
-        <span class="caption">Currently you have no contract instances to interact with.</span>
+      <v-flex xs9 v-if="deployedContracts.length === 0">
+        <p class="subheading">Activate the Deploy & Run Transactions plugin.</p>
+        <p class="caption">Currently you have no contract instances to interact with.</p>
       </v-flex>
       <v-flex xs12 v-else v-for="(deployed, i) in deployedContracts" :key="i">
         <v-flex xs12>
