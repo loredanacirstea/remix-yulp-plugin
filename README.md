@@ -2,6 +2,12 @@
 
 In-work plugin for [Remix IDE](http://remix-alpha.ethereum.org) for compiling and deploying Yul+ smart contracts.
 
+How to use [https://youtu.be/ov9TixNHvXg](https://youtu.be/ov9TixNHvXg) :
+- sample Yul+ contracts
+- transpile to Yul, compile & deploy
+- easy UI for contract interaction
+- learn some transaction debugging tips
+
 ## Use
 
 Start client (see Development) or use the instance hosted at https://remix.fuel.sh by https://fuel.sh/ (the https://github.com/FuelLabs/yulp creators).
