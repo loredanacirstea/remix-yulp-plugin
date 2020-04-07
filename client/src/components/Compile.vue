@@ -1,6 +1,9 @@
 <template>
   <v-flex xs12>
     <v-layout row wrap>
+      <v-flex xs12>
+        <FileSelect />
+      </v-flex>
       <v-flex xs10>
         <v-btn
           block dark
@@ -23,9 +26,10 @@
 <script>
 import { mapState } from 'vuex';
 import CompilationDetails from './CompilationDetails';
+import FileSelect from './FileSelect';
 
 export default {
-  components: {CompilationDetails},
+  components: {CompilationDetails, FileSelect},
   computed: mapState({
     compiled: state => state.compiled,
     shortFileName: state => state.fileName.replace('browser/', ''),
