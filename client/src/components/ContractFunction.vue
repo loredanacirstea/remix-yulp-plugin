@@ -4,14 +4,24 @@
       <v-btn
         dark
         @click="runFunction"
-        :color="colorMap[abi.stateMutability]"
+        :color="abi.calldata ? colorMap[calldataStateMutability] : colorMap[abi.stateMutability]"
         class="text-none"
         style="text-transform:none!important;margin-left:5px;"
       >
         {{abi.name}}
       </v-btn>
     </v-flex>
-    <v-flex xs5 offset-xs1>
+    <v-flex xs1>
+      <v-checkbox
+        v-if="abi.calldata"
+        label=""
+        :value="calldataStateMutability"
+        :color="colorMap[calldataStateMutability]"
+        style="margin-top: 7px;margin-left: 10px;"
+        @change="calldataStateMutability = calldataStateMutability  === 'payable' ? 'view' : 'payable'"
+      ></v-checkbox>
+    </v-flex>
+    <v-flex xs5>
       <v-text-field
         v-if="abi.inputs.length > 0"
         v-model="functionArgs"
@@ -47,7 +57,8 @@ export default {
         view: '#3498DB',
         pure: '#3498DB',
         nonpayable: '#E89F3C',
-      }
+      },
+      calldataStateMutability: 'payable',
     };
   },
   methods: {
@@ -67,6 +78,12 @@ export default {
       }
 
       if (!parsed) {
+        try {
+          parsed = JSON.parse(`["${value}"]`);
+        } catch (e) {}
+      }
+
+      if (!parsed) {
         this.errorMessages = ['Input invalid'];
         return [];
       }
@@ -82,12 +99,18 @@ export default {
         address,
         functionArgs,
         txGasLimit,
-        txValue
+        txValue,
+        calldataStateMutability,
       } = this;
 
       const accounts = await remixclient.udapp.getAccounts().catch(console.log);
-      const useCall = !abi.stateMutability.includes('payable');
-      const data = getTransaction(abi, this.argsValueCheck(functionArgs));
+      const useCall = !(abi.calldata
+        ? calldataStateMutability
+        : abi.stateMutability
+      ).includes('payable');
+      const data = abi.calldata
+        ? functionArgs
+        : getTransaction(abi, this.argsValueCheck(functionArgs));
 
       const transaction = {
         from: accounts[0],
