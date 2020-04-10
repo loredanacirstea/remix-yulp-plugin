@@ -29,12 +29,12 @@ export default {
         {
           id: 1,
           name: 'SimpleStore',
-          url: '/examples/SimpleStore.yulp',
+          url: 'https://raw.githubusercontent.com/loredanacirstea/remix-yulp-plugin/master/client/public/examples/SimpleStore.yulp',
         },
         {
           id: 2,
           name: 'ERC20',
-          url: '/examples/ERC20.yulp',
+          url: 'https://raw.githubusercontent.com/loredanacirstea/remix-yulp-plugin/master/client/public/examples/ERC20.yulp',
         },
       ],
     }
