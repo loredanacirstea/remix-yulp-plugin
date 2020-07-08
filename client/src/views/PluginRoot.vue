@@ -155,10 +155,8 @@ export default {
         yulpError = [yulpErrors];
         compiled.errors = yulpError;
       }
-
       if (!yulpError) {
         const output = JSON.parse(solc.compile(solcData(yulpResult)));
-        console.log('output', output);
 
         if (output.contracts) {
           compiled = Object.values(output.contracts['input.yul'])[0];
