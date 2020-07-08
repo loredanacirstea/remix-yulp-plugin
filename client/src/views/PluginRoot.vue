@@ -66,7 +66,6 @@
 import Vue from 'vue';
 import { mapState } from 'vuex';
 import yulp from 'yulp';
-import wrapper from 'solc/wrapper';
 import VueAwesomeSwiper from 'vue-awesome-swiper';
 import 'swiper/dist/css/swiper.css';
 
@@ -76,16 +75,6 @@ import { repoLink } from '../config';
 import { abiBuildSigsTopics } from '../utils/abiExtractYulp';
 
 Vue.use(VueAwesomeSwiper);
-
-const solc = wrapper(window.Module);
-const solcData = yulsource => JSON.stringify({
-  language: 'Yul',
-  sources: { 'input.yul': { content: yulsource } },
-  settings: {
-    outputSelection: { '*': { '*': ['*'], '': ['*'] } },
-    optimizer: { enabled: true, details: { yul: true } },
-  },
-});
 
 export default {
   components: {
@@ -142,7 +131,7 @@ export default {
       // We make sure that we are compiling the current file state
       await this.$store.dispatch('setCurrentFile');
 
-      const {source} = this;
+      const {source, fileName} = this;
       let yulpCompiled = null;
       let yulpResult = null;
       let yulpError = null;
@@ -155,11 +144,25 @@ export default {
         yulpError = [yulpErrors];
         compiled.errors = yulpError;
       }
+
       if (!yulpError) {
-        const output = JSON.parse(solc.compile(solcData(yulpResult)));
+        // For some reason we need to replace . with _ for the web version
+        // of solc loaded by Remix from solc-bin to compile the code.
+        yulpResult = yulpResult.replace(/\./g, '_');
+
+        let output = await this.$store.dispatch('compileFile', {name: fileName, source: yulpResult});
+
+        if (!output) {
+          output = {errors: [{message: 'Could not compile.'}]};
+        } else {
+          output = output.data;
+        }
 
         if (output.contracts) {
-          compiled = Object.values(output.contracts['input.yul'])[0];
+          compiled = Object.values(output.contracts)[0];
+          // We only select the first contract object now
+          // In the future, maybe support multiple
+          compiled = Object.values(compiled)[0];
         }
         compiled.yul = yulpResult;
         compiled.signatures = yulpCompiled.signatures;

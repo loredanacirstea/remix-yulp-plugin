@@ -40,5 +40,18 @@ export default new Vuex.Store({
       commit('setState', {field: 'fileName', data: newFileName});
       commit('setState', {field: 'source', data: source});
     },
+    async compileFile({state}, {name, source}) {
+      const {remixclient, fileName} = state;
+
+      const contract = {};
+      contract[name || fileName] = {content: source };
+
+      return remixclient.call('solidity', 'compileWithParameters', contract, {
+        evmVersion: null,
+        optimize: true,
+        language: 'Yul',
+        version: '0.5.7+commit.6da8b019',
+      });
+    },
   },
 });
